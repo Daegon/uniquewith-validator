@@ -41,6 +41,8 @@ class ValidatorExtension extends Validator
         // we will just assume that this column to be verified shares the
         // attribute's name.
         $column = $attribute;
+        $column = explode('.', $column);
+        $column = end($column);
 
         // Create $extra array with all other columns, so getCount() will
         // include them as where clauses as well
@@ -66,12 +68,14 @@ class ValidatorExtension extends Validator
 
             if (count($parameter) > 1)
             {
-                $column_name = $parameter[1];
+                $field = explode('^', $parameter[1]);
             }
             else
             {
-                $column_name = $field_name;
+                $field = explode('^', $field_name);
             }
+            $column_name = $field[0];
+            $column_value = isset($field[1]) ? $field[1] : false;
 
             // Figure out whether main field_name has an explicitly specified
             // column_name
@@ -81,7 +85,7 @@ class ValidatorExtension extends Validator
             }
             else
             {
-                $extra[$column_name] = array_get($this->data, $field_name);
+                $extra[$column_name] = $column_value ? $column_value : array_get($this->data, $field_name);
             }
         }
 
